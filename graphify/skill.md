@@ -297,8 +297,24 @@ confidence_score is REQUIRED on every edge - never omit it, never use 0.5 as a d
   Weak or speculative: 0.4-0.5. Most edges should be 0.6-0.9, not 0.5.
 - AMBIGUOUS edges: 0.1-0.3
 
+CONTROLLED EDGE VOCABULARY (pick the most specific that applies — `related_to` is fallback, avoid it when something more specific fits):
+- supports — A reinforces, backs up, or provides evidence for B (claim ← evidence, decision ← rationale)
+- contradicts — A opposes, refutes, or conflicts with B (decision vs. counter-evidence; rule vs. exception)
+- depends_on — A requires B to be true / to function / to exist (decision depends on assumption; feature depends on infra)
+- derived_from — A was generated, extracted, or inspired by B (summary derived from doc; pattern derived from incident)
+- part_of — A is a structural component of B (feature part of product; tactic part of strategy)
+- preceded_by — A came before B in time or order (step N preceded_by step N-1; event preceded_by trigger)
+- followed_by — A came after B in time or order (decision followed_by outcome)
+- authored_by — A was created or written by B (post authored_by person; doc authored_by author)
+- tagged_with — A is categorized/tagged with concept B (topic, theme, label)
+- related_to — generic association; use ONLY when none of the above fit
+- rationale_for — B explains WHY A exists/was decided (rationale node → concept it explains)
+- references / cites — A explicitly references or cites B (citation, "see §3.2", hyperlink)
+- semantically_similar_to — A and B solve the same problem without structural link (non-obvious cross-file, INFERRED, 0.6-0.95)
+- calls / implements / conceptually_related_to / shares_data_with — code/legacy edges; AST handles `calls` and `imports` already, do not duplicate
+
 Output exactly this JSON (no other text):
-{"nodes":[{"id":"filestem_entityname","label":"Human Readable Name","file_type":"code|document|paper|image","source_file":"relative/path","source_location":null,"source_url":null,"captured_at":null,"author":null,"contributor":null}],"edges":[{"source":"node_id","target":"node_id","relation":"calls|implements|references|cites|conceptually_related_to|shares_data_with|semantically_similar_to|rationale_for","confidence":"EXTRACTED|INFERRED|AMBIGUOUS","confidence_score":1.0,"source_file":"relative/path","source_location":null,"weight":1.0}],"hyperedges":[{"id":"snake_case_id","label":"Human Readable Label","nodes":["node_id1","node_id2","node_id3"],"relation":"participate_in|implement|form","confidence":"EXTRACTED|INFERRED","confidence_score":0.75,"source_file":"relative/path"}],"input_tokens":0,"output_tokens":0}
+{"nodes":[{"id":"filestem_entityname","label":"Human Readable Name","file_type":"code|document|paper|image","source_file":"relative/path","source_location":null,"source_url":null,"captured_at":null,"author":null,"contributor":null}],"edges":[{"source":"node_id","target":"node_id","relation":"supports|contradicts|depends_on|derived_from|part_of|preceded_by|followed_by|authored_by|tagged_with|related_to|rationale_for|references|cites|semantically_similar_to|calls|implements|conceptually_related_to|shares_data_with","confidence":"EXTRACTED|INFERRED|AMBIGUOUS","confidence_score":1.0,"source_file":"relative/path","source_location":null,"weight":1.0}],"hyperedges":[{"id":"snake_case_id","label":"Human Readable Label","nodes":["node_id1","node_id2","node_id3"],"relation":"participate_in|implement|form","confidence":"EXTRACTED|INFERRED","confidence_score":0.75,"source_file":"relative/path"}],"input_tokens":0,"output_tokens":0}
 ```
 
 **Step B3 - Collect, cache, and merge**
