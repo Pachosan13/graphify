@@ -25,5 +25,20 @@ Rules:
 Node ID format: lowercase, only `[a-z0-9_]`, no dots or slashes. Format `{stem}_{entity}` where stem is `{parent_dir}_{filename_without_ext}` (the immediate parent directory + the filename stem, both lowercased with non-alphanumeric chars replaced by `_`) and entity is the symbol name similarly normalized. Only one level of parent. `src/auth/session.py` + `ValidateToken` → `auth_session_validatetoken`. Top-level files use just the filename stem. This must match the AST extractor's ID. Never append chunk or sequence suffixes — IDs must be deterministic from the label alone.
 
 Output exactly this JSON (no other text):
-{"nodes":[{"id":"session_validatetoken","label":"Human Readable Name","file_type":"code|document|paper|image|rationale|concept","source_file":"relative/path","source_location":null,"source_url":null,"captured_at":null,"author":null,"contributor":null}],"edges":[{"source":"node_id","target":"node_id","relation":"calls|implements|references|cites|conceptually_related_to|shares_data_with|semantically_similar_to|rationale_for","confidence":"EXTRACTED|INFERRED|AMBIGUOUS","confidence_score":1.0,"source_file":"relative/path","source_location":null,"weight":1.0}],"hyperedges":[{"id":"snake_case_id","label":"Human Readable Label","nodes":["node_id1","node_id2","node_id3"],"relation":"participate_in|implement|form","confidence":"EXTRACTED|INFERRED","confidence_score":0.75,"source_file":"relative/path"}],"input_tokens":0,"output_tokens":0}
+CONTROLLED EDGE VOCABULARY (pick the most specific that applies — `related_to` is fallback, avoid it when something more specific fits):
+- supports — A reinforces, backs up, or provides evidence for B (claim <- evidence, decision <- rationale)
+- contradicts — A opposes, refutes, or conflicts with B (decision vs. counter-evidence; rule vs. exception)
+- depends_on — A requires B to be true / to function / to exist (decision depends on assumption; feature depends on infra)
+- derived_from — A was generated, extracted, or inspired by B (summary derived from doc; pattern derived from incident)
+- part_of — A is a structural component of B (feature part of product; tactic part of strategy)
+- preceded_by / followed_by — A came before / after B in time or order
+- authored_by — A was created or written by B (post authored_by person; doc authored_by author)
+- tagged_with — A is categorized/tagged with concept B (topic, theme, label)
+- related_to — generic association; use ONLY when none of the above fit
+- rationale_for — B explains WHY A exists or was decided (rationale node -> concept it explains)
+- references / cites — A explicitly references or cites B (citation, "see section 3.2", hyperlink)
+- semantically_similar_to — A and B solve the same problem without a structural link (non-obvious cross-file, INFERRED, 0.6-0.95)
+- calls / implements / conceptually_related_to / shares_data_with — code/legacy edges; AST already covers calls/imports, do not duplicate
+
+{"nodes":[{"id":"session_validatetoken","label":"Human Readable Name","file_type":"code|document|paper|image|rationale|concept","source_file":"relative/path","source_location":null,"source_url":null,"captured_at":null,"author":null,"contributor":null}],"edges":[{"source":"node_id","target":"node_id","relation":"supports|contradicts|depends_on|derived_from|part_of|preceded_by|followed_by|authored_by|tagged_with|related_to|rationale_for|references|cites|semantically_similar_to|calls|implements|conceptually_related_to|shares_data_with","confidence":"EXTRACTED|INFERRED|AMBIGUOUS","confidence_score":1.0,"source_file":"relative/path","source_location":null,"weight":1.0}],"hyperedges":[{"id":"snake_case_id","label":"Human Readable Label","nodes":["node_id1","node_id2","node_id3"],"relation":"participate_in|implement|form","confidence":"EXTRACTED|INFERRED","confidence_score":0.75,"source_file":"relative/path"}],"input_tokens":0,"output_tokens":0}
 ```
